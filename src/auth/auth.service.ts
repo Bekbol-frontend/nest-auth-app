@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -134,6 +135,35 @@ export class AuthService {
         error.name === 'TokenExpiredError'
       ) {
         throw new UnauthorizedException('Invalid or expired refresh token');
+      }
+
+      throw new InternalServerErrorException(`Error: ${error.message}`);
+    }
+  }
+
+  async logout(id: number) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { id },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      await this.prismaService.user.update({
+        where: { id },
+        data: {
+          hashedRt: null,
+        },
+      });
+
+      return {
+        message: 'Logout successful',
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
       }
 
       throw new InternalServerErrorException(`Error: ${error.message}`);
