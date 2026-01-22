@@ -63,6 +63,7 @@ export class AuthService {
       const { accessToken, refreshToken } = await this.generatedTokens({
         id: user.id,
         email: user.email,
+        role: user.role,
       });
 
       const salt = await bcrypt.genSalt();
@@ -111,6 +112,7 @@ export class AuthService {
         await this.generatedTokens({
           id: payload.id,
           email: payload.email,
+          role: payload.role,
         });
 
       const salt = await bcrypt.genSalt();

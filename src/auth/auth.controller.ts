@@ -28,7 +28,6 @@ export class AuthController {
     return await this.authService.login(dto);
   }
 
-  // @Public()
   @Post('refresh')
   async refresh(@Body('refreshToken') refreshToken: string) {
     if (!refreshToken) {
